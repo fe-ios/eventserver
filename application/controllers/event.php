@@ -4,19 +4,18 @@ class Event extends CI_Controller
 {
 	
 	
-	public function create()
+	public function create_event()
 	{
 		$status = "";
 		$msg = "";
+		//echo print_r($_POST);
 
-		echo print_r($_POST);
-
-		if(empty($_POST["owner_id"]) || empty($_POST["password"]) || empty($_POST["event_name"]) || empty($_POST["start_date"]))
+		if(empty($_POST["user_id"]) || empty($_POST["password"]) || empty($_POST["event_name"]) || empty($_POST["start_date"]))
 		{
 			$status = "error";
 			$msg = "Post data error.";
 		}else{
-			$user_id = $this->input->post('owner_id');
+			$user_id = $this->input->post('user_id');
 			$password = $this->input->post('password');
 			$query = $this->db->query('SELECT * FROM user WHERE user_id = '.$this->db->escape($user_id).' AND password = '.$this->db->escape($password).'');
 			if($query->num_rows() == 0)
@@ -26,7 +25,7 @@ class Event extends CI_Controller
 			}else
 			{
 				$data = array(
-					'owner_id' => $this->input->post('owner_id'),
+					'owner_id' => $this->input->post('user_id'),
 					'name' => $this->input->post('event_name'), 
 					'start_date' => $this->input->post('start_date'),
 					'end_date' => $this->input->post('end_date'),
@@ -55,62 +54,95 @@ class Event extends CI_Controller
 		echo json_encode(array('status' => $status, 'msg' => $msg));
 	}
 
-	public function delete()
+	public function delete_event()
 	{
-		$status = "";
-		$msg = "";
-
-		if(empty($_POST["event_id"]) || empty($_POST["owner_id"]))
+		if(empty($_POST["event_id"]) || empty($_POST["user_id"]) || empty($_POST["password"]))
 		{
 			$status = "error";
 			$msg = "Post data error.";
+			echo json_encode(array('status' => $status, 'msg' => $msg));
 		}else{
 			$event_id = $this->input->post("event_id");
-			$owner_id = $this->input->post("owner_id");
-			$result = $this->db->delete("event", array('event_id' => $event_id, 'owner_id' => $owner_id));
-			$status = "success";
-			$msg = $result;
+			$user_id = $this->input->post("user_id");
+			$password = $this->input->post('password');
+			$query = $this->db->query('SELECT * FROM user WHERE user_id = '.$this->db->escape($user_id).' AND password = '.$this->db->escape($password).'');
+			if($query->num_rows() == 0)
+			{
+				$status = "error";
+				$msg = "Invalid user.";
+			}else{
+				$result = $this->db->delete("event", array('event_id' => $event_id, 'owner_id' => $user_id));
+				$status = "success";
+				echo json_encode(array('status' => $status, 'result' => $result));
+			}
 		}
-
-		echo json_encode(array('status' => $status, 'msg' => $msg));
 	}
 
-	public function get_user_events()
+	public function user_event()
 	{
-		$status = "";
-		$msg = "";
-
-		if(empty($_GET["user_id"]))
+		if(empty($_POST["user_id"]) || empty($_POST["password"]))
 		{
 			$status = "error";
 			$msg = "Params error.";
+			echo json_encode(array('status' => $status, 'msg' => $msg));
 		}else{
-			$attendee_id = $this->input->get("user_id");
-			$query = $this->db->query("SELECT * from event WHERE event_id in (SELECT event_id from event_attendee WHERE attendee_id = ".$attendee_id.")");
-			$status = "success";
-			$msg = $query->result();
+			$user_id = $this->input->post("user_id");
+			$password = $this->input->post('password');
+			$query = $this->db->query('SELECT * FROM user WHERE user_id = '.$this->db->escape($user_id).' AND password = '.$this->db->escape($password).'');
+			if($query->num_rows() == 0)
+			{
+				$status = "error";
+				$msg = "Invalid user.";
+			}else{
+				$query = $this->db->query("SELECT * from event WHERE event_id in (SELECT event_id from event_attendee WHERE attendee_id = ".$this->db->escape($user_id).")");
+				$status = "success";
+				$event = $query->result();
+				echo json_encode(array('status' => $status, 'event' => $event));
+			}
 		}
-
-		echo json_encode(array('status' => $status, 'msg' => $msg));
 	}
 
-	public function get_owner_events()
+	public function owner_event()
 	{
-		$status = "";
-		$msg = "";
-
-		if(empty($_GET["owner_id"]))
+		if(empty($_POST["owner_id"]) || empty($_POST["password"]))
 		{
 			$status = "error";
 			$msg = "Params error.";
+			echo json_encode(array('status' => $status, 'msg' => $msg));
 		}else{
-			$owner_id = $this->input->get("owner_id");
-			$query = $this->db->query("SELECT * from event WHERE owner_id = ".$owner_id."");
-			$status = "success";
-			$msg = $query->result();
+			$user_id = $this->input->post("owner_id");
+			$password = $this->input->post('password');
+			$query = $this->db->query('SELECT * FROM user WHERE user_id = '.$this->db->escape($user_id).' AND password = '.$this->db->escape($password).'');
+			if($query->num_rows() == 0)
+			{
+				$status = "error";
+				$msg = "Invalid user.";
+			}else{
+				$query = $this->db->query("SELECT * from event WHERE owner_id = ".$this->db->escape($user_id)."");
+				$status = "success";
+				$event = $query->result();
+				echo json_encode(array('status' => $status, 'event' => $event));
+			}
 		}
+	}
 
-		echo json_encode(array('status' => $status, 'msg' => $msg));
+	public function public_event()
+	{
+		$start = 0;
+		$count = 10;
+		if(!empty($_GET["start"])){
+			$start = (int)$this->input->get("start");
+		}
+		if(!empty($_GET["count"])){
+			$count = (int)$this->input->get("count");
+		}
+		if($count < 1) $count = 1;
+		else if($count > 100) $count = 100;
+
+		$query = $this->db->query("SELECT * from event LIMIT ".$this->db->escape($start).", ".$this->db->escape($count)."");
+		$status = "success";
+		$event = $query->result();
+		echo json_encode(array('status' => $status, 'event' => $event));
 	}
 }
 
