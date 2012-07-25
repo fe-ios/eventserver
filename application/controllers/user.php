@@ -20,15 +20,22 @@ class User extends CI_Controller
 				$msg = "User already exist.";
 			}else{
 				$data = array(
-					'user_name' => $this->input->post('username'), 
-					'password' => md5($this->input->post('password')),
+					'username' => $this->input->post('username'), 
+					'password' => $this->input->post('password'),
+					//'password' => md5($this->input->post('password')),
 					'create_date' => date('Y-m-d H:i:s')
 				);
 				try {
 					$this->db->insert('user', $data);
 					$userid = $this->db->insert_id();
 					$status = "success";
-					$msg = array('userid' => $userid);
+					$user = array(
+						'userid' => $userid, 
+						'username' => $data['username'],
+						'password' => $data['password']
+					);
+					echo json_encode(array('status' => $status, 'user' => $user));
+					return;
 				} catch (Exception $e) {
 					$status = "error";
 					$msg = "Database error.";
@@ -51,7 +58,8 @@ class User extends CI_Controller
 		}else{
 			try {
 				$username = $this->input->post('username');
-				$password = md5($this->input->post('password'));
+				$password = $this->input->post('password');
+				//$password = md5($this->input->post('password'));
 				$date = date("Y-m-d H:i:s");
 				$session = $this->encrypt->encode($username.$password.time());
 				$query = $this->db->query('SELECT * FROM user WHERE username = '.$this->db->escape($username).' AND password = '.$this->db->escape($password).'');
@@ -62,7 +70,8 @@ class User extends CI_Controller
 					$status = "success";
 					$user = array(
 						'userid' => $result->user_id, 
-						'session' => $session
+						'username' => $result->username,
+						'password' => $result->password
 					);
 					echo json_encode(array('status' => $status, 'user' => $user));
 					return;
@@ -91,7 +100,8 @@ class User extends CI_Controller
 		}else{
 			try {
 				$username = $this->input->post('username');
-				$password = md5($this->input->post('password'));
+				$password = $this->input->post('password');
+				//$password = md5($this->input->post('password'));
 				$this->db->query('UPDATE user set login_time = "" session = "" WHERE username = '.$this->db->escape($username).' AND password = '.$this->db->escape($password).'');
 				$status = "success";
 				$msg = "Logout ok.";
