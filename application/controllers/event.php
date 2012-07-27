@@ -135,15 +135,22 @@ class Event extends CI_Controller
 		}
 		if(!empty($_GET["count"])){
 			$count = (int)$this->input->get("count");
+		}else{
+			$count = 0;
 		}
-		if($count < 1) $count = 1;
-		else if($count > 100) $count = 100;
+		if($count > 100) $count = 100;
 
-		$query = $this->db->query("SELECT * from event LIMIT ".$this->db->escape($start).", ".$this->db->escape($count)."");
+		if($count == 0){
+			$query = $this->db->query("SELECT * from event WHERE event_id > ".$this->db->escape($start)." order by event_id DESC");
+		}else{
+			$query = $this->db->query("SELECT * from event order by event_id DESC LIMIT ".$this->db->escape($start).", ".$this->db->escape($count)."");
+		}
+
 		$status = "success";
 		$event = $query->result();
 		echo json_encode(array('status' => $status, 'event' => $event));
 	}
+	
 }
 
 ?>
