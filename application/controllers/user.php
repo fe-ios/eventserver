@@ -9,7 +9,7 @@ class User extends CI_Controller
 		$status = "";
 		$msg = "";
 
-		if(empty($_POST['username']) || empty($_POST['password']))
+		if(empty($_POST['username']) || empty($_POST['password']) || empty($_POST['email']))
 		{
 			$status = "error";
 			$msg = "Post data error.";
@@ -22,8 +22,10 @@ class User extends CI_Controller
 				$data = array(
 					'username' => $this->input->post('username'), 
 					'password' => $this->input->post('password'),
+					'email' => $this->input->post('email'),
 					//'password' => md5($this->input->post('password')),
-					'create_date' => date('Y-m-d H:i:s')
+					'create_date' => date('Y-m-d H:i:s'),
+					'login_time' => date('Y-m-d H:i:s')
 				);
 				try {
 					$this->db->insert('user', $data);
@@ -32,7 +34,8 @@ class User extends CI_Controller
 					$user = array(
 						'userid' => $userid, 
 						'username' => $data['username'],
-						'password' => $data['password']
+						'password' => $data['password'],
+						'email' => $data['email']
 					);
 					echo json_encode(array('status' => $status, 'user' => $user));
 					return;
@@ -60,18 +63,19 @@ class User extends CI_Controller
 				$username = $this->input->post('username');
 				$password = $this->input->post('password');
 				//$password = md5($this->input->post('password'));
-				$date = date("Y-m-d H:i:s");
-				$session = $this->encrypt->encode($username.$password.time());
 				$query = $this->db->query('SELECT * FROM user WHERE username = '.$this->db->escape($username).' AND password = '.$this->db->escape($password).'');
 				if($query->num_rows() > 0)
 				{
-					$this->db->query('UPDATE user set login_time = '.$this->db->escape($date).', session = '.$this->db->escape($session).' WHERE username = '.$this->db->escape($username).'');
+					$date = date("Y-m-d H:i:s");
+					//$session = $this->encrypt->encode($username.$password.time());
+					$this->db->query('UPDATE user set login_time = '.$this->db->escape($date).' WHERE username = '.$this->db->escape($username).'');
 					$result = $query->row();
 					$status = "success";
 					$user = array(
 						'userid' => $result->user_id, 
 						'username' => $result->username,
-						'password' => $result->password
+						'password' => $result->password,
+						'email' => $result->email
 					);
 					echo json_encode(array('status' => $status, 'user' => $user));
 					return;
@@ -102,7 +106,7 @@ class User extends CI_Controller
 				$username = $this->input->post('username');
 				$password = $this->input->post('password');
 				//$password = md5($this->input->post('password'));
-				$this->db->query('UPDATE user set login_time = "" session = "" WHERE username = '.$this->db->escape($username).' AND password = '.$this->db->escape($password).'');
+				$this->db->query('UPDATE user set session = "" WHERE username = '.$this->db->escape($username).' AND password = '.$this->db->escape($password).'');
 				$status = "success";
 				$msg = "Logout ok.";
 			} catch (Exception $e) {

@@ -139,6 +139,7 @@ class Event extends CI_Controller
 			$count = 0;
 		}
 		if($count > 100) $count = 100;
+		//sleep(2);
 
 		if($count == 0){
 			$query = $this->db->query("SELECT * from event WHERE event_id > ".$this->db->escape($start)." order by event_id DESC");
@@ -150,7 +151,7 @@ class Event extends CI_Controller
 		$event = $query->result();
 		echo json_encode(array('status' => $status, 'event' => $event));
 	}
-	
+
 }
 
 ?>
