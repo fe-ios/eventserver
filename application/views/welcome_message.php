@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<title>404 Page Not Found</title>
+<title>Welcome to iEvent</title>
 <style type="text/css">
 
 ::selection{ background-color: #E13300; color: white; }
@@ -55,9 +55,9 @@ p {
 </style>
 </head>
 <body>
-	<div id="container">
-		<h1><?php echo $heading; ?></h1>
-		<?php echo $message; ?>
-	</div>
+    <div id="container">
+        <h1>Welcome to iEvent!</h1>
+        <p>iEvent helps you to manage your event schedules and find more interesting events.</p>
+    </div>
 </body>
 </html>

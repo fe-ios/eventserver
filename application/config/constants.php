@@ -37,5 +37,16 @@ define('FOPEN_WRITE_CREATE_STRICT',				'xb');
 define('FOPEN_READ_WRITE_CREATE_STRICT',		'x+b');
 
 
+/*
+|--------------------------------------------------------------------------
+| Security Keys
+|--------------------------------------------------------------------------
+*/
+
+define('IEVENT_AUTHENTICATION', 'asdfasdfasdf');
+define('IEVENT_PUBLIC_KEY', '');
+define('IEVENT_PRIVATE_KEY', '');
+
+
 /* End of file constants.php */
 /* Location: ./application/config/constants.php */
