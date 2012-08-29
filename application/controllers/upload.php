@@ -17,8 +17,15 @@ class Upload extends CI_Controller
 	private function do_upload()
 	{
 		$this->load->helper('url');
-		
-		$config['upload_path'] = 'uploads/';
+
+        if(!file_exists('avatars/' . $_POST['userid'])) {
+            @mkdir('avatars/' . $_POST['userid'], 0777, true);
+        }
+        if(!file_exists('avatars/' . $_POST['userid'] . '/index.html')) {
+            @copy('avatars/index.html', 'avatars/' . $_POST['userid'] . '/index.html');
+        }
+
+		$config['upload_path'] = 'avatars/' . $_POST['userid'];
 		$config['allowed_types'] = 'gif|jpeg|jpg|png';
 		$config['max_size'] = '5000';
 		$config['encrypt_name'] = true;
