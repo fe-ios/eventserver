@@ -14,5 +14,5 @@
         sort($args_array, SORT_STRING);
         $retrived_string = implode('&', $args_array);
 
-        return base64_encode($_SERVER['REQUEST_METHOD'] . ':' . rawurlencode($CIevent->uri->uri_string() . '?' . $retrived_string) . IEVENT_AUTHENTICATION) == $_SERVER['HTTP_IEVENT_SIGNATURE'];
+        return base64_encode($_SERVER['REQUEST_METHOD'] . ':' . rawurlencode($CIevent->uri->uri_string() . '?' . $retrived_string) . IEVENT_AUTHENTICATION) == $_SERVER['HTTP_SIGNATURE'];
 	}
