@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-	function client_auth() {
+    function client_auth() {
         $CIevent =& get_instance();
 
         if($_SERVER['REQUEST_METHOD'] == 'GET') {
@@ -15,4 +15,4 @@
         $retrived_string = implode('&', $args_array);
 
         return base64_encode($_SERVER['REQUEST_METHOD'] . ':' . rawurlencode($CIevent->uri->uri_string() . '?' . $retrived_string) . IEVENT_AUTHENTICATION) == $_SERVER['HTTP_SIGNATURE'];
-	}
+    }
