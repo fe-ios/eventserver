@@ -41,8 +41,12 @@
 $route['default_controller'] = "welcome";
 $route['404_override'] = '';
 
-$route['tags'] = "tags/index";
+$route['tags'] = "tags/add";
 $route['tags/(:num)'] = "tags/index/$1";
+
+$route['users'] = "users/index";
+$route['users/(:num)'] = "users/info/$1";
+$route['users/(:num)/(:any)'] = "users/$2/$1";
 
 
 /* End of file routes.php */
