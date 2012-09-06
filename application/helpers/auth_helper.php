@@ -16,3 +16,27 @@
 
         return base64_encode($_SERVER['REQUEST_METHOD'] . ':' . rawurlencode($CIevent->uri->uri_string() . '?' . $retrived_string) . IEVENT_AUTHENTICATION) == $_SERVER['HTTP_SIGNATURE'];
     }
+
+    function token_match($username, $token) {
+        $CIevent =& get_instance();
+
+        $query = $CIevent->db->query('SELECT 1 FROM `user_token` WHERE username = "' . $username . '" AND token_string = "' . $token . '" AND expire_time > ' . $_SERVER['REQUEST_TIME']);
+
+        if($query->num_rows() == 0) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    function is_self($userid, $username, $token) {
+        $CIevent =& get_instance();
+
+        $query = $CIevent->db->query('SELECT 1 FROM `users` INNER JOIN `user_token` ON users.username = user_token.username WHERE users.id = ' . $userid . ' AND users.username = "' . $username . '" AND user_token.token_string = "' . $token . '" AND user_token.expire_time > ' . $_SERVER['REQUEST_TIME']);
+
+        if($query->num_rows() == 0) {
+            return false;
+        } else {
+            return true;
+        }
+    }
