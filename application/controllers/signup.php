@@ -3,26 +3,22 @@
 class Signup extends CI_Controller {
 
     public function index() {
-
         $timing = $_SERVER['REQUEST_TIME'];
-        $status;
-        $msg;
+        $meta;
         $data;
 
         if( !client_auth() ) {
-            $status = 'ERROR';
-            $msg = 'Unauthenticated client. Request failed.';
-            echo json_encode(array('status' => $status, 'msg' => $msg));
-        } else {
+            $meta = request_status('auth_fail');
+            echo json_encode(array('status' => $meta['s'], 'msg' => $meta['m']));
+        } elseif($_SERVER['REQUEST_METHOD'] == 'POST') {
             $username = $_POST['username'];
             $userpass = $_POST['userpass'];
             $email = $_POST['email'];
             $passone = $this->db->query('SELECT 1 FROM users WHERE username = "' . $username . '" OR email = "' . $email . '"');
 
             if($passone->num_rows() > 0) {
-                $status = 'ERROR';
-                $msg = 'Username or email already exists!';
-                echo json_encode(array('status' => $status, 'msg' => $msg));
+                $meta = request_status('signup_fail1');
+                echo json_encode(array('status' => $meta['s'], 'msg' => $meta['m']));
             } else {
                 $passtwo = $this->db->query('INSERT INTO users (username, userpass, email, create_time, last_login, current_login) VALUES ("' . $username . '", "' . sha1($userpass) . '", "' . $email . '", "' . $timing . '", "' . $timing . '", "' . $timing . '")');
 
@@ -33,18 +29,18 @@ class Signup extends CI_Controller {
                     session_destroy();
                     $expire = $timing + 2592000;
                     $this->db->query('INSERT INTO user_token (username, shake_string, token_string, generate_time, expire_time) VALUES ("' . $username . '", "' . $shake . '", "' . $token . '", "' . $timing . '", "' . $expire . '")');
-                    $status = 'OK';
-                    $msg = 'Register succeed! Now you are logged in with your new account.';
+                    $meta = request_status('signup_succeed');
                     $data = array('token' => $token, 'expire' => $expire);
-                    echo json_encode(array('status' => $status, 'msg' => $msg, 'data' => $data));
+                    echo json_encode(array('status' => $meta['s'], 'msg' => $meta['m'], 'data' => $data));
                 } else {
-                    $status = 'ERROR';
-                    $msg = 'Register failed! Please try again.';
-                    echo json_encode(array('status' => $status, 'msg' => $msg));
+                    $meta = request_status('signup_fail2');
+                    echo json_encode(array('status' => $meta['s'], 'msg' => $meta['m']));
                 }
             }
+        } else {
+            $meta = request_status('request_deny');
+            echo json_encode(array('status' => $meta['s'], 'msg' => $meta['m']));
         }
-
     }
 
 }
