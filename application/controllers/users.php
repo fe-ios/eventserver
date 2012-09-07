@@ -133,11 +133,63 @@ class Users extends CI_Controller {
     }
 
     public function avatar($userid) {
-        //users/(id)/avatar          POST    上传头像图片（仅对当前登录用户有效）    
+        $timing = $_SERVER['REQUEST_TIME'];
+        $meta;
+        $data;
+
+        $username = $_POST['username'];
+        $token = $_POST['token'];
+        $avatar = $_POST['avatar'];
+
+        if( !client_auth() ) {
+            $meta = request_status('auth_fail');
+            echo json_encode(array('status' => $meta['s'], 'msg' => $meta['m']));
+        } elseif($_SERVER['REQUEST_METHOD'] == 'POST' && is_self($userid, $username, $token)) {
+            $attending = $this->db->query('UPDATE users SET avatar_url = "' . $avatar . '" WHERE username = "' . $username . '"');
+            $meta = request_status('info_get_succeed');
+            echo json_encode(array('status' => $meta['s'], 'msg' => $meta['m']));
+        } else {
+            $meta = request_status('request_deny');
+            echo json_encode(array('status' => $meta['s'], 'msg' => $meta['m']));
+        }
     }
 
     public function password($userid) {
-        //users/(id)/password        POST    修改密码（仅对当前登录用户有效）    
+        $timing = $_SERVER['REQUEST_TIME'];
+        $meta;
+        $data;
+
+        $username = $_POST['username'];
+        $userpass = $_POST['userpass'];
+        $new_pass = $_POST['newpass'];
+        $old_token = $_POST['token'];
+
+        if( !client_auth() ) {
+            $meta = request_status('auth_fail');
+            echo json_encode(array('status' => $meta['s'], 'msg' => $meta['m']));
+        } elseif($_SERVER['REQUEST_METHOD'] == 'POST' && is_self($userid, $username, $old_token)) {
+            $passcheck = $this->db->query('SELECT userpass FROM users WHERE username = "' . $username . '"');
+
+            if(sha1($passcheck->row()->userpass) == $userpass) {//echo 'yes';
+                $this->db->query('UPDATE users, user_token SET users.userpass = "' . sha1($new_pass) . '", user_token.expire_time = ' . $timing . ' WHERE users.username = "' . $username . '" AND user_token.username = "' . $username . '"');
+
+                session_start();
+                $shake = sha1(uniqid(session_id(), true));
+                $token = session_id() . sha1(uniqid($username, true));
+                session_destroy();
+                $expire = $timing + 2592000;
+                $this->db->query('INSERT INTO user_token (username, shake_string, token_string, generate_time, expire_time) VALUES ("' . $username . '", "' . $shake . '", "' . $token . '", ' . $timing . ', "' . $expire . '")');
+                $meta = request_status('change_pass_succeed');
+                $data = array('shake' => $shake);
+                echo json_encode(array('status' => $meta['s'], 'msg' => $meta['m'], 'data' => $data));
+            } else {
+                $meta = request_status('wrong_password');
+                echo json_encode(array('status' => $meta['s'], 'msg' => $meta['m']));
+            }
+        } else {
+            $meta = request_status('request_deny');
+            echo json_encode(array('status' => $meta['s'], 'msg' => $meta['m']));
+        }
     }
 
 }

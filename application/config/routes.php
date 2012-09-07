@@ -48,6 +48,13 @@ $route['users'] = "users/index";
 $route['users/(:num)'] = "users/info/$1";
 $route['users/(:num)/(:any)'] = "users/$2/$1";
 
+$route['events'] = "events/index";
+$route['events/(:num)'] = "events/info/$1";
+/*
+$route['events/(:num)/(:any)'] = "";
+$route['events/(:num)/(:any)/(:num)'] = "";
+*/
+
 
 /* End of file routes.php */
 /* Location: ./application/config/routes.php */

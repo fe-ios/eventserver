@@ -33,6 +33,10 @@
                 $s = 'ERROR';
                 $m = 'Signin failed! Please try again.';
                 break;
+            case 'wrong_password': //change info fail
+                $s = 'ERROR';
+                $m = 'The old password you entered is not correct.';
+                break;
             case 'signin_succeed1': //signin 1st pass succeed
                 $s = 'OK';
                 $m = 'Continue the 2nd step with the given shake string.';
@@ -76,6 +80,10 @@
             case 'info_change_fail': //change info fail
                 $s = 'ERROR';
                 $m = 'Your can only change information of yourself.';
+                break;
+            case 'change_pass_succeed': //change info fail
+                $s = 'OK';
+                $m = 'Password changed successfully. Log in again.';
                 break;
         }
 
