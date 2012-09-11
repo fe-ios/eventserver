@@ -29,9 +29,8 @@ class Events extends CI_Controller {
             $address = $_POST['address'];
             $logo_url = $_POST['logo_url'];
             $tickets_total = $_POST['tickets_total'];
-            $agenda = $_POST['agenda'];
 
-            $this->db->query('INSERT INTO events (name, description, detail, type, verify, creator_id, create_time, start_time, end_time, venue, address, logo_url, tickets_total, tickets_remain, agenda, canceled, num_attendees, num_watchers) VALUES ("' . $name . '", "' . $description . '", "' . $detail . '", "' . $type . '", "' . $verify . '", ' . $creator_id . ', ' . $timing . ', ' . $start_time . ', ' . $end_time . ', "' . $venue . '", "' . $address . '", "' . $logo_url . '", ' . $tickets_total . ', ' . $tickets_total . ', "' . $agenda . '", "false", 0, 0)');
+            $this->db->query('INSERT INTO events (name, description, detail, type, verify, creator_id, create_time, start_time, end_time, venue, address, logo_url, tickets_total, tickets_remain, canceled, num_attendees, num_watchers) VALUES ("' . $name . '", "' . $description . '", "' . $detail . '", "' . $type . '", "' . $verify . '", ' . $creator_id . ', ' . $timing . ', ' . $start_time . ', ' . $end_time . ', "' . $venue . '", "' . $address . '", "' . $logo_url . '", ' . $tickets_total . ', ' . $tickets_total . ', "false", 0, 0)');
 
             if($this->db->affected_rows() > 0) {
                 $meta = request_status('add_event_succeed');
@@ -73,10 +72,9 @@ class Events extends CI_Controller {
             $address = $_POST['address'];
             $logo_url = $_POST['logo_url'];
             $tickets_total = $_POST['tickets_total'];
-            $agenda = $_POST['agenda'];
             $canceled = $_POST['canceled'];
 
-            $this->db->query('UPDATE events SET name = "' . $name . '", description = "' . $description . '", detail = "' . $detail . '", type = "' . $type . '", verify = "' . $verify . '", start_time = "' . $start_time . '", end_time = "' . $end_time . '", venue = "' . $venue . '", address = "' . $address . '", logo_url = "' . $logo_url . '", tickets_total = "' . $tickets_total . '", agenda = "' . $agenda . '", canceled = "' . $canceled . '" WHERE id = "' . $event_id . '"');
+            $this->db->query('UPDATE events SET name = "' . $name . '", description = "' . $description . '", detail = "' . $detail . '", type = "' . $type . '", verify = "' . $verify . '", start_time = "' . $start_time . '", end_time = "' . $end_time . '", venue = "' . $venue . '", address = "' . $address . '", logo_url = "' . $logo_url . '", tickets_total = "' . $tickets_total . '", canceled = "' . $canceled . '" WHERE id = "' . $event_id . '"');
 
             if($this->db->affected_rows() > 0) {
                 $meta = request_status('modify_event_succeed');
