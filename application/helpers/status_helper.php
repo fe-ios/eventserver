@@ -63,7 +63,7 @@
                 break;
             case 'user_list_succeed': //get info succeed
                 $s = 'OK';
-                $m = 'Get user list succeed.';
+                $m = 'Get users list succeed.';
                 break;
             case 'info_get_succeed': //get info succeed
                 $s = 'OK';
@@ -85,6 +85,29 @@
                 $s = 'OK';
                 $m = 'Password changed successfully. Log in again.';
                 break;
+            case 'event_list_succeed': //get info succeed
+                $s = 'OK';
+                $m = 'Get events list succeed.';
+                break;
+            case 'add_event_succeed': //get info succeed
+                $s = 'OK';
+                $m = 'Successfully add an event.';
+                break;
+            case 'add_event_fail': //get info succeed
+                $s = 'ERROR';
+                $m = 'Fail to add event. Please try again.';
+                break;
+            case 'modify_event_succeed': //get info succeed
+                $s = 'OK';
+                $m = 'Successfully modify this event.';
+                break;
+            case 'modify_event_fail': //get info succeed
+                $s = 'ERROR';
+                $m = 'Fail to modify this event. Please try again.';
+                break;
+                
+                
+                
         }
 
         return array('s' => $s, 'm' => $m);
