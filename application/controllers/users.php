@@ -7,7 +7,7 @@ class Users extends CI_Controller {
         $meta;
         $data;
 
-        if( !client_auth() ) {
+        if( !client_check() ) {
             $meta = request_status('auth_fail');
             echo json_encode(array('status' => $meta['s'], 'msg' => $meta['m']));
         } elseif($_SERVER['REQUEST_METHOD'] == 'GET') {
@@ -28,12 +28,12 @@ class Users extends CI_Controller {
         $data;
         $self;
 
-        if( !client_auth() ) {
+        if( !client_check() ) {
             $meta = request_status('auth_fail');
             echo json_encode(array('status' => $meta['s'], 'msg' => $meta['m']));
         } elseif($_SERVER['REQUEST_METHOD'] == 'POST') {
             //修改当前登录用户的个人信息（仅对当前登录用户有效）
-            if(is_self($userid, $_POST['username'], $_POST['token'])) {
+            if(self_check($userid, $_POST['username'], $_POST['token'])) {
                 //succeed
                 $this->db->query('UPDATE users SET email = "' . $_POST['email'] . '", avatar_url = "' . $_POST['avatar_url'] . '" WHERE id = "' . $userid . '"');
                 $meta = request_status('info_change_succeed');
@@ -43,7 +43,7 @@ class Users extends CI_Controller {
                 echo json_encode(array('status' => $meta['s'], 'msg' => $meta['m']));
             }
         } else {
-            if(is_self($userid, $_GET['username'], $_GET['token'])) {
+            if(self_check($userid, $_GET['username'], $_GET['token'])) {
                 $user_info = $this->db->query('SELECT * FROM `users` WHERE id = "' . $userid . '"');
                 $self = true;
             } else {
@@ -68,7 +68,7 @@ class Users extends CI_Controller {
         $data;
         $self;
 
-        if( !client_auth() ) {
+        if( !client_check() ) {
             $meta = request_status('auth_fail');
             echo json_encode(array('status' => $meta['s'], 'msg' => $meta['m']));
         } elseif($_SERVER['REQUEST_METHOD'] == 'GET') {
@@ -76,7 +76,7 @@ class Users extends CI_Controller {
 
             $data = $organizing->result();
             $meta = request_status('info_get_succeed');
-            $self = is_self($userid, $_GET['username'], $_GET['token']);
+            $self = self_check($userid, $_GET['username'], $_GET['token']);
             echo json_encode(array('status' => $meta['s'], 'msg' => $meta['m'], 'data' => $data, 'self' => $self));
         } else {
             $meta = request_status('request_deny');
@@ -90,11 +90,11 @@ class Users extends CI_Controller {
         $data;
         $self;
 
-        if( !client_auth() ) {
+        if( !client_check() ) {
             $meta = request_status('auth_fail');
             echo json_encode(array('status' => $meta['s'], 'msg' => $meta['m']));
         } elseif($_SERVER['REQUEST_METHOD'] == 'GET') {
-            if(is_self($userid, $_GET['username'], $_GET['token'])) {
+            if(self_check($userid, $_GET['username'], $_GET['token'])) {
                 $attending = $this->db->query('SELECT events.id, name, description, detail, type, verify, creator_id, create_time, start_time, end_time, venue, address, logo_url, tickets_total, tickets_remain, canceled FROM `events` INNER JOIN `event_attendee` ON events.id = event_attendee.event_id WHERE event_attendee.attendee_id = ' . $userid . ' AND event_attendee.attendee_status = "ok"');
                 $self = true;
             } else {
@@ -116,14 +116,14 @@ class Users extends CI_Controller {
         $data;
         $self;
 
-        if( !client_auth() ) {
+        if( !client_check() ) {
             $meta = request_status('auth_fail');
             echo json_encode(array('status' => $meta['s'], 'msg' => $meta['m']));
         } elseif($_SERVER['REQUEST_METHOD'] == 'GET') {
             $watching = $this->db->query('SELECT events.id, name, description, detail, type, verify, creator_id, create_time, start_time, end_time, venue, address, logo_url, tickets_total, tickets_remain, canceled FROM `events` INNER JOIN `event_watcher` ON events.id = event_watcher.event_id WHERE event_watcher.watcher_id = ' . $userid);
 
             $data = $watching->result();
-            $self = is_self($userid, $_GET['username'], $_GET['token']);
+            $self = self_check($userid, $_GET['username'], $_GET['token']);
             $meta = request_status('info_get_succeed');
             echo json_encode(array('status' => $meta['s'], 'msg' => $meta['m'], 'data' => $data, 'self' => $self));
         } else {
@@ -141,10 +141,10 @@ class Users extends CI_Controller {
         $token = $_POST['token'];
         $avatar = $_POST['avatar'];
 
-        if( !client_auth() ) {
+        if( !client_check() ) {
             $meta = request_status('auth_fail');
             echo json_encode(array('status' => $meta['s'], 'msg' => $meta['m']));
-        } elseif($_SERVER['REQUEST_METHOD'] == 'POST' && is_self($userid, $username, $token)) {
+        } elseif($_SERVER['REQUEST_METHOD'] == 'POST' && self_check($userid, $username, $token)) {
             $attending = $this->db->query('UPDATE users SET avatar_url = "' . $avatar . '" WHERE username = "' . $username . '"');
             $meta = request_status('info_get_succeed');
             echo json_encode(array('status' => $meta['s'], 'msg' => $meta['m']));
@@ -164,10 +164,10 @@ class Users extends CI_Controller {
         $new_pass = $_POST['newpass'];
         $old_token = $_POST['token'];
 
-        if( !client_auth() ) {
+        if( !client_check() ) {
             $meta = request_status('auth_fail');
             echo json_encode(array('status' => $meta['s'], 'msg' => $meta['m']));
-        } elseif($_SERVER['REQUEST_METHOD'] == 'POST' && is_self($userid, $username, $old_token)) {
+        } elseif($_SERVER['REQUEST_METHOD'] == 'POST' && self_check($userid, $username, $old_token)) {
             $passcheck = $this->db->query('SELECT userpass FROM users WHERE username = "' . $username . '"');
 
             if(sha1($passcheck->row()->userpass) == $userpass) {//echo 'yes';

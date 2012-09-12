@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-    function client_auth() {
+    function client_check() {
         $CIevent =& get_instance();
 
         if($_SERVER['REQUEST_METHOD'] == 'GET') {
@@ -17,7 +17,7 @@
         return base64_encode($_SERVER['REQUEST_METHOD'] . ':' . rawurlencode($CIevent->uri->uri_string() . '?' . $retrived_string) . IEVENT_AUTHENTICATION) == $_SERVER['HTTP_SIGNATURE'];
     }
 
-    function token_match($username, $token) {
+    function token_check($username, $token) {
         $CIevent =& get_instance();
 
         $query = $CIevent->db->query('SELECT 1 FROM `user_token` WHERE username = "' . $username . '" AND token_string = "' . $token . '" AND expire_time > ' . $_SERVER['REQUEST_TIME']);
@@ -29,7 +29,7 @@
         }
     }
 
-    function is_self($userid, $username, $token) {
+    function self_check($userid, $username, $token) {
         $CIevent =& get_instance();
 
         $query = $CIevent->db->query('SELECT 1 FROM `users` INNER JOIN `user_token` ON users.username = user_token.username WHERE users.id = ' . $userid . ' AND users.username = "' . $username . '" AND user_token.token_string = "' . $token . '" AND user_token.expire_time > ' . $_SERVER['REQUEST_TIME']);

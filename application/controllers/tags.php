@@ -7,7 +7,7 @@ class Tags extends CI_Controller {
         $meta;
         $data;
 
-        if( !client_auth() ) {
+        if( !client_check() ) {
             $meta = request_status('auth_fail');
             echo json_encode(array('status' => $meta['s'], 'msg' => $meta['m']));
         } elseif($_SERVER['REQUEST_METHOD'] == 'GET') {
@@ -32,10 +32,10 @@ class Tags extends CI_Controller {
         $meta;
         $data;
 
-        if( !client_auth() ) {
+        if( !client_check() ) {
             $meta = request_status('auth_fail');
             echo json_encode(array('status' => $meta['s'], 'msg' => $meta['m']));
-        } elseif($_SERVER['REQUEST_METHOD'] == 'POST' && token_match($_POST['username'], $_POST['token'])) {
+        } elseif($_SERVER['REQUEST_METHOD'] == 'POST' && token_check($_POST['username'], $_POST['token'])) {
             //succeed
             $tag = $_POST['tag'];
             $query_tag = $this->db->query('SELECT id, tag FROM `tags` WHERE tag = "' . $tag . '"');

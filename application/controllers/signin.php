@@ -7,7 +7,7 @@ class Signin extends CI_Controller {
         $meta;
         $data;
 
-        if( !client_auth() ) {
+        if( !client_check() ) {
             $meta = request_status('auth_fail');
             echo json_encode(array('status' => $meta['s'], 'msg' => $meta['m']));
         } elseif($_SERVER['REQUEST_METHOD'] == 'GET') {
