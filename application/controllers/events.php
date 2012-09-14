@@ -93,7 +93,30 @@ class Events extends CI_Controller {
     }
 
     public function logo($event_id) {
-        // POST: /events/(id)/logo 上传活动logo（仅允许组织活动的用户提交）
+        $timing = $_SERVER['REQUEST_TIME'];
+        $meta;
+        $data;
+
+        if( !client_check() ) {
+            $meta = request_status('auth_fail');
+            echo json_encode(array('status' => $meta['s'], 'msg' => $meta['m']));
+        } elseif($_SERVER['REQUEST_METHOD'] == 'POST' && token_check($_POST['username'], $_POST['token'])) {
+            //修改活动议程
+            $logo_url = $_POST['logo_url'];
+
+            $this->db->query('UPDATE events SET logo_url = "' . $logo_url . '" WHERE id = "' . $event_id . '"');
+
+            if($this->db->affected_rows() > 0) {
+                $meta = request_status('modify_event_succeed');
+                echo json_encode(array('status' => $meta['s'], 'msg' => $meta['m']));
+            } else {
+                $meta = request_status('modify_event_fail');
+                echo json_encode(array('status' => $meta['s'], 'msg' => $meta['m']));
+            }
+        } else {
+            $meta = request_status('request_deny');
+            echo json_encode(array('status' => $meta['s'], 'msg' => $meta['m']));
+        }
     }
 
     public function agenda($event_id) {

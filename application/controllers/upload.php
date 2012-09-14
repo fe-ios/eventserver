@@ -10,14 +10,17 @@ class Upload extends CI_Controller {
     }
 
     private function do_upload() {
-        if(!file_exists('avatars/' . $_POST['userid'])) {
-            @mkdir('avatars/' . $_POST['userid'], 0777, true);
+        $type = $_POST['type'];
+        $index = $_POST['index'];
+
+        if(!file_exists($type . '/' . $index)) {
+            @mkdir($type . '/' . $index, 0777, true);
         }
-        if(!file_exists('avatars/' . $_POST['userid'] . '/index.html')) {
-            @copy('avatars/index.html', 'avatars/' . $_POST['userid'] . '/index.html');
+        if(!file_exists($type . '/' . $index . '/index.html')) {
+            @copy($type . '/index.html', $type . '/' . $index . '/index.html');
         }
 
-        $config['upload_path'] = 'avatars/' . $_POST['userid'];
+        $config['upload_path'] = $type . '/' . $index;
         $config['allowed_types'] = 'gif|jpeg|jpg|png';
         $config['max_size'] = '5000';
         $config['encrypt_name'] = true;
@@ -37,7 +40,7 @@ class Upload extends CI_Controller {
 
             $thumb_config = array(
                 'source_image'    => $data['full_path'],
-                'new_image'       => 'uploads/',
+                'new_image'       => $type . '/',
                 'maintain_ratio' => true,
                 'width'           => 110,
                 'height'          => 110
