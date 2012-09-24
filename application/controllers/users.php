@@ -44,7 +44,7 @@ class Users extends CI_Controller {
             }
         } else {
             if(self_check($userid, $_GET['username'], $_GET['token'])) {
-                $user_info = $this->db->query('SELECT * FROM `users` WHERE id = "' . $userid . '"');
+                $user_info = $this->db->query('SELECT id, username, email, create_time, last_login, current_login, avatar_url FROM `users` WHERE id = "' . $userid . '"');
                 $self = true;
             } else {
                 $user_info = $this->db->query('SELECT id, username, avatar_url FROM `users` WHERE id = "' . $userid . '"');
@@ -56,7 +56,7 @@ class Users extends CI_Controller {
                 echo json_encode(array('status' => $meta['s'], 'msg' => $meta['m'], 'self' => $self));
             } else {
                 $meta = request_status('info_get_succeed');
-                $data = $user_info->result();
+                $data = $user_info->row();
                 echo json_encode(array('status' => $meta['s'], 'msg' => $meta['m'], 'data' => $data, 'self' => $self));
             }
         }
@@ -139,14 +139,14 @@ class Users extends CI_Controller {
 
         $username = $_POST['username'];
         $token = $_POST['token'];
-        $avatar = $_POST['avatar'];
+        $avatar = $_POST['avatar_url'];
 
         if( !client_check() ) {
             $meta = request_status('auth_fail');
             echo json_encode(array('status' => $meta['s'], 'msg' => $meta['m']));
         } elseif($_SERVER['REQUEST_METHOD'] == 'POST' && self_check($userid, $username, $token)) {
             $attending = $this->db->query('UPDATE users SET avatar_url = "' . $avatar . '" WHERE username = "' . $username . '"');
-            $meta = request_status('info_get_succeed');
+            $meta = request_status('info_change_succeed');
             echo json_encode(array('status' => $meta['s'], 'msg' => $meta['m']));
         } else {
             $meta = request_status('request_deny');

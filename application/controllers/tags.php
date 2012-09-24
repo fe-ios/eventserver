@@ -30,7 +30,7 @@ class Tags extends CI_Controller {
     public function add() {
         $timing = $_SERVER['REQUEST_TIME'];
         $meta;
-        $data;
+        //$data;
 
         if( !client_check() ) {
             $meta = request_status('auth_fail');
@@ -44,12 +44,13 @@ class Tags extends CI_Controller {
                 $this->db->query('INSERT INTO tags (tag) VALUES ("' . $tag . '")');
                 $added_tag = $this->db->query('SELECT id, tag FROM `tags` WHERE tag = "' . $tag . '"');
                 $meta = request_status('tag_add_succeed');
-                $data = $added_tag->row();
+                //$data = $added_tag->row();
             } else {
                 $meta = request_status('tag_add_fail');
-                $data = $query_tag->row();
+                //$data = $query_tag->row();
             }
-            echo json_encode(array('status' => $meta['s'], 'msg' => $meta['m'], 'data' => $data));
+            echo json_encode(array('status' => $meta['s'], 'msg' => $meta['m']));
+            //echo json_encode(array('status' => $meta['s'], 'msg' => $meta['m'], 'data' => $data));
         } else {
             $meta = request_status('request_deny');
             echo json_encode(array('status' => $meta['s'], 'msg' => $meta['m']));

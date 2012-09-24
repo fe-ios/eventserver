@@ -27,19 +27,17 @@ class Upload extends CI_Controller {
 
         $this->load->library('upload', $config);
 
-        $status = "";
-        $msg = "";
+        $meta;
+        $data;
 
         if (!$this->upload->do_upload()) {
-            $status = "ERROR";
-            $msg = "upload error.";
+            $meta = request_status('upload_fail');
+            echo json_encode(array('status' => $meta['s'], 'msg' => $meta['m']));
         } else {
-            $status = "success";
-            $data = $this->upload->data();
-            $msg = array('filename' => $data['file_name'], 'width' => $data['image_width'], 'height' => $data['image_height'], 'size' => $data['file_size']);
+            $return = $this->upload->data();
 
             $thumb_config = array(
-                'source_image'    => $data['full_path'],
+                'source_image'    => $return['full_path'],
                 'new_image'       => $type . '/',
                 'maintain_ratio' => true,
                 'width'           => 110,
@@ -47,9 +45,11 @@ class Upload extends CI_Controller {
             );
             $this->load->library('image_lib', $thumb_config);
             $this->image_lib->resize();
-        }
 
-        echo json_encode(array('status' => $status, 'msg' => $msg));
+            $meta = request_status('upload_succeed');
+            $data = array('type' => $type, 'index' => $index, 'filename' => $return['file_name'], 'width' => $return['image_width'], 'height' => $return['image_height'], 'size' => $return['file_size']);
+            echo json_encode(array('status' => $meta['s'], 'msg' => $meta['m'], 'data' => $data));
+        }
     }
 
 }

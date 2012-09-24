@@ -67,7 +67,7 @@
                 break;
             case 'info_get_succeed': //get info succeed
                 $s = 'OK';
-                $m = 'Get user information succeed.';
+                $m = 'Get information succeed.';
                 break;
             case 'info_get_fail': //get info fail
                 $s = 'ERROR';
@@ -105,9 +105,14 @@
                 $s = 'ERROR';
                 $m = 'Fail to modify this event. Please try again.';
                 break;
-                
-                
-                
+            case 'upload_succeed': //get info succeed
+                $s = 'OK';
+                $m = 'Successfully upload the picture.';
+                break;
+            case 'upload_fail': //get info succeed
+                $s = 'ERROR';
+                $m = 'Fail to upload the picture.';
+                break;
         }
 
         return array('s' => $s, 'm' => $m);

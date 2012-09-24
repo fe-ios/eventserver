@@ -131,7 +131,7 @@ class Events extends CI_Controller {
             //获取活动议程
             $event_list = $this->db->query('SELECT agenda FROM `events` WHERE id = ' . $event_id);
             $meta = request_status('info_get_succeed');
-            $data = $event_list->result();
+            $data = $event_list->row();
             echo json_encode(array('status' => $meta['s'], 'msg' => $meta['m'], 'data' => $data));
         } elseif($_SERVER['REQUEST_METHOD'] == 'POST' && token_check($_POST['username'], $_POST['token'])) {
             //修改活动议程
